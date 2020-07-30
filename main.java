@@ -6,12 +6,38 @@ public static void main(String args[]) {
         CeilingFan ceilingFan = new CeilingFan("Living room");
         CeilingFanHighCommand ceilingFanOn = new CeilingFanHighCommand(ceilingFan);
         CeilingFanOffCommand ceilingFanOff = new CeilingFanOffCommand(ceilingFan);
-        remote.setCommand(0,ceilingFanOn,ceilingFanOff);
+        Light light = new Light("Living room");
+        LightOnCommand lightOn = new LightOnCommand(light);
+        LightOffCommand lightOff = new LightOffCommand(light);
+        Command[] partyOn = {lightOn,ceilingFanOn};
+        Command[] partyOff = {lightOff,ceilingFanOff};
+
+        MacroCommand partyOnMacro = new MacroCommand(partyOn);
+        MacroCommand partyOffMacro = new MacroCommand(partyOff);
+        remote.setCommand(0,partyOnMacro,partyOffMacro);
         remote.onButtonWasPressed(0);
         remote.offButtonWasPressed(0);
         remote.undoButtonWasPush();
     }
 }
+
+class MacroCommand implements Command{
+    Command[] commands;
+    public MacroCommand(Command[] commands){
+        this.commands = commands;
+    }
+    public void execute(){
+        for(int i =0;i<commands.length;i++){
+            commands[i].execute();
+        }
+    }
+    public void undo(){
+        for(int i =0;i<commands.length;i++){
+            commands[i].undo();
+        }
+    }
+}
+
 
 class CeilingFan{
     public static final int HIGH = 3;
